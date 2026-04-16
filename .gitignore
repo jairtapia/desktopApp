@@ -1,0 +1,46 @@
+## Visual Studio
+.vs/
+[Bb]in/
+[Oo]bj/
+*.user
+*.userosscache
+*.sln.docstates
+
+## .NET
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.dll
+*.exe
+*.pdb
+*.nupkg
+*.vshost.exe
+*.vshost.exe.config
+*.vshost.exe.manifest
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+## WinUI 3 / Windows App SDK
+AppPackages/
+BundleArtifacts/
+Generated Files/
+_Package.xml
+*.msix
+*.msixbundle
+*.appx
+*.appxbundle
+*.appinstaller
+
+## OS
+.DS_Store
+Thumbs.db
+
+## IDEs
+.idea/
+.vscode/
+
+## Test
+TestResults/

@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Page
+    x:Class="DesktopAssistant.Views.TutorialPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="using:DesktopAssistant.Converters">
+
+    <Page.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibility" />
+    </Page.Resources>
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Step Content -->
+        <FlipView x:Name="TutorialFlipView"
+                  Grid.Row="0"
+                  SelectedIndex="{x:Bind ViewModel.CurrentStep, Mode=TwoWay}"
+                  UseTouchAnimationsForAllNavigation="True">
+
+            <!-- Step 0: Welcome -->
+            <FlipViewItem>
+                <Grid>
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="20" MaxWidth="600">
+                        <Border Background="{ThemeResource AccentAAFillColorDefaultBrush}" 
+                                CornerRadius="40" Width="80" Height="80" 
+                                HorizontalAlignment="Center">
+                            <FontIcon Glyph="&#xE890;" FontSize="40" Foreground="White" 
+                                      HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        
+                        <TextBlock Text="Welcome to Desktop Assistant!" 
+                                   FontSize="32" FontWeight="Bold" 
+                                   HorizontalAlignment="Center" TextAlignment="Center" />
+                        
+                        <TextBlock Text="Let's set up your desktop control center in just a few steps. You'll be able to control your computer remotely from your phone."
+                                   FontSize="16" 
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                   HorizontalAlignment="Center" TextAlignment="Center"
+                                   TextWrapping="WrapWholeWords"
+                                   LineHeight="26" MaxWidth="480" />
+
+                        <Grid Margin="0,20,0,0" HorizontalAlignment="Center">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+
+                            <Border Grid.Row="0" Grid.Column="0" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
+                                    CornerRadius="12" Padding="20" Margin="6">
+                                <StackPanel Spacing="8">
+                                    <FontIcon Glyph="&#xE71D;" FontSize="24" Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
+                                    <TextBlock Text="App Scanner" FontWeight="SemiBold" />
+                                    <TextBlock Text="Find all your apps" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Row="0" Grid.Column="1" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
+                                    CornerRadius="12" Padding="20" Margin="6">
+                                <StackPanel Spacing="8">
+                                    <FontIcon Glyph="&#xE703;" FontSize="24" Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
+                                    <TextBlock Text="Remote Control" FontWeight="SemiBold" />
+                                    <TextBlock Text="Volume, brightness &amp; more" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Row="1" Grid.Column="0" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
+                                    CornerRadius="12" Padding="20" Margin="6">
+                                <StackPanel Spacing="8">
+                                    <FontIcon Glyph="&#xE78B;" FontSize="24" Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
+                                    <TextBlock Text="Split Screen" FontWeight="SemiBold" />
+                                    <TextBlock Text="Organize windows" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Row="1" Grid.Column="1" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
+                                    CornerRadius="12" Padding="20" Margin="6">
+                                <StackPanel Spacing="8">
+                                    <FontIcon Glyph="&#xE836;" FontSize="24" Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
+                                    <TextBlock Text="Device Pairing" FontWeight="SemiBold" />
+                                    <TextBlock Text="Connect your phone" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </StackPanel>
+                </Grid>
+            </FlipViewItem>
+
+            <!-- Step 1: Permissions -->
+            <FlipViewItem>
+                <Grid>
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="20" MaxWidth="500">
+                        <Border Background="{ThemeResource SystemFillColorCautionBackgroundBrush}" 
+                                CornerRadius="40" Width="80" Height="80" 
+                                HorizontalAlignment="Center">
+                            <FontIcon Glyph="&#xE72E;" FontSize="40"
+                                      HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        
+                        <TextBlock Text="Permissions Required" 
+                                   FontSize="28" FontWeight="Bold" 
+                                   HorizontalAlignment="Center" />
+                        
+                        <TextBlock Text="Desktop Assistant needs certain permissions to work properly. We respect your privacy and only access what's necessary."
+                                   FontSize="15" 
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                   HorizontalAlignment="Center" TextAlignment="Center"
+                                   TextWrapping="WrapWholeWords" LineHeight="24" />
+
+                        <StackPanel Spacing="12" Margin="0,16,0,0">
+                            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
+                                    CornerRadius="8" Padding="16">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <FontIcon Grid.Column="0" Glyph="&#xE71D;" FontSize="20" Margin="0,0,16,0" 
+                                              Foreground="{ThemeResource AccentFillColorDefaultBrush}" VerticalAlignment="Center" />
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="Application Scanning" FontWeight="SemiBold" />
+                                        <TextBlock Text="Read installed applications list" FontSize="12" 
+                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                    </StackPanel>
+                                    <ToggleSwitch Grid.Column="2" IsOn="True" VerticalAlignment="Center" />
+                                </Grid>
+                            </Border>
+
+                            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
+                                    CornerRadius="8" Padding="16">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <FontIcon Grid.Column="0" Glyph="&#xE703;" FontSize="20" Margin="0,0,16,0" 
+                                              Foreground="{ThemeResource AccentFillColorDefaultBrush}" VerticalAlignment="Center" />
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="System Control" FontWeight="SemiBold" />
+                                        <TextBlock Text="Volume, brightness, window management" FontSize="12" 
+                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                    </StackPanel>
+                                    <ToggleSwitch Grid.Column="2" IsOn="True" VerticalAlignment="Center" />
+                                </Grid>
+                            </Border>
+
+                            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
+                                    CornerRadius="8" Padding="16">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <FontIcon Grid.Column="0" Glyph="&#xE968;" FontSize="20" Margin="0,0,16,0" 
+                                              Foreground="{ThemeResource AccentFillColorDefaultBrush}" VerticalAlignment="Center" />
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="Network Access" FontWeight="SemiBold" />
+                                        <TextBlock Text="WebSocket connection and device pairing" FontSize="12" 
+                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                    </StackPanel>
+                                    <ToggleSwitch Grid.Column="2" IsOn="True" VerticalAlignment="Center" />
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+
+                        <Button Content="Grant All Permissions"
+                                Style="{StaticResource AccentButtonStyle}"
+                                HorizontalAlignment="Center"
+                                Padding="32,12" CornerRadius="8"
+                                Margin="0,8,0,0"
+                                Command="{x:Bind ViewModel.GrantPermissionsCommand}" />
+                    </StackPanel>
+                </Grid>
+            </FlipViewItem>
+
+            <!-- Step 2: App Scan -->
+            <FlipViewItem>
+                <Grid>
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="20" MaxWidth="500">
+                        <Border Background="{ThemeResource AccentAAFillColorDefaultBrush}" 
+                                CornerRadius="40" Width="80" Height="80" 
+                                HorizontalAlignment="Center">
+                            <FontIcon Glyph="&#xE71D;" FontSize="40" Foreground="White"
+                                      HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        
+                        <TextBlock Text="Scan Your Applications" 
+                                   FontSize="28" FontWeight="Bold" 
+                                   HorizontalAlignment="Center" />
+                        
+                        <TextBlock Text="We'll scan your system to find installed and running applications so you can control them remotely."
+                                   FontSize="15"
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                   HorizontalAlignment="Center" TextAlignment="Center"
+                                   TextWrapping="WrapWholeWords" LineHeight="24" />
+
+                        <!-- Scan Button -->
+                        <Button Content="Start Scan"
+                                Style="{StaticResource AccentButtonStyle}"
+                                HorizontalAlignment="Center"
+                                Padding="40,14" CornerRadius="8"
+                                FontSize="15"
+                                Visibility="{x:Bind ViewModel.ScanCompleted, Mode=OneWay, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert}"
+                                Command="{x:Bind ViewModel.ScanAppsCommand}" />
+
+                        <!-- Scanning Progress -->
+                        <StackPanel Visibility="{x:Bind ViewModel.IsScanning, Mode=OneWay, Converter={StaticResource BoolToVisibility}}"
+                                    Spacing="12" HorizontalAlignment="Center">
+                            <ProgressRing IsActive="True" Width="48" Height="48" />
+                            <TextBlock Text="Scanning applications..." 
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                       HorizontalAlignment="Center" />
+                        </StackPanel>
+
+                        <!-- Scan Results -->
+                        <StackPanel Visibility="{x:Bind ViewModel.ScanCompleted, Mode=OneWay, Converter={StaticResource BoolToVisibility}}"
+                                    Spacing="12" HorizontalAlignment="Center">
+                            <FontIcon Glyph="&#xE73E;" FontSize="48" 
+                                      Foreground="{ThemeResource SystemFillColorSuccessBrush}" />
+                            <TextBlock FontSize="20" FontWeight="SemiBold" HorizontalAlignment="Center">
+                                <Run Text="{x:Bind ViewModel.AppsFound, Mode=OneWay}" />
+                                <Run Text=" applications found" />
+                            </TextBlock>
+                            <TextBlock Text="You can manage these apps from the dashboard."
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                       HorizontalAlignment="Center" />
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </FlipViewItem>
+
+            <!-- Step 3: Device Pairing -->
+            <FlipViewItem>
+                <Grid>
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="20" MaxWidth="500">
+                        <Border Background="{ThemeResource AccentAAFillColorDefaultBrush}" 
+                                CornerRadius="40" Width="80" Height="80" 
+                                HorizontalAlignment="Center">
+                            <FontIcon Glyph="&#xE836;" FontSize="40" Foreground="White"
+                                      HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        
+                        <TextBlock Text="Pair Your Device" 
+                                   FontSize="28" FontWeight="Bold" 
+                                   HorizontalAlignment="Center" />
+                        
+                        <TextBlock Text="Scan this QR code with your mobile device to link it with Desktop Assistant."
+                                   FontSize="15"
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                   HorizontalAlignment="Center" TextAlignment="Center"
+                                   TextWrapping="WrapWholeWords" LineHeight="24" />
+
+                        <!-- QR Code -->
+                        <Border Background="White" CornerRadius="16" Padding="16" 
+                                HorizontalAlignment="Center" Margin="0,8,0,0">
+                            <Image x:Name="QrCodeImage" Width="200" Height="200" Stretch="Uniform" />
+                        </Border>
+
+                        <!-- Pair Info -->
+                        <StackPanel Spacing="8" HorizontalAlignment="Center">
+                            <TextBlock HorizontalAlignment="Center" FontSize="13"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}">
+                                <Run Text="Local IP: " />
+                                <Run Text="{x:Bind ViewModel.LocalIp, Mode=OneWay}" FontWeight="SemiBold" />
+                            </TextBlock>
+                            <TextBlock HorizontalAlignment="Center" FontSize="13"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}">
+                                <Run Text="Pair Code: " />
+                                <Run Text="{x:Bind ViewModel.PairCode, Mode=OneWay}" FontWeight="Bold" FontSize="16" />
+                            </TextBlock>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Center">
+                            <Button Content="Generate QR"
+                                    Style="{StaticResource AccentButtonStyle}"
+                                    Padding="24,10" CornerRadius="8"
+                                    Command="{x:Bind ViewModel.GenerateQrCodeCommand}" />
+                            <Button Content="Skip for now"
+                                    Padding="24,10" CornerRadius="8"
+                                    Command="{x:Bind ViewModel.CompleteTutorialCommand}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </FlipViewItem>
+        </FlipView>
+
+        <!-- Bottom Navigation Bar -->
+        <Grid Grid.Row="1" Padding="32,16" 
+              Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+              BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,1,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Skip -->
+            <HyperlinkButton Grid.Column="0" Content="Skip Tutorial" 
+                             Command="{x:Bind ViewModel.SkipTutorialCommand}" />
+
+            <!-- Step Indicators -->
+            <StackPanel Grid.Column="1" Orientation="Horizontal" 
+                        HorizontalAlignment="Center" Spacing="8">
+                <Ellipse Width="10" Height="10" 
+                         Fill="{ThemeResource AccentFillColorDefaultBrush}" />
+                <Ellipse Width="10" Height="10"
+                         Fill="{ThemeResource ControlStrongFillColorDefaultBrush}" 
+                         Opacity="0.3" />
+                <Ellipse Width="10" Height="10"
+                         Fill="{ThemeResource ControlStrongFillColorDefaultBrush}" 
+                         Opacity="0.3" />
+                <Ellipse Width="10" Height="10"
+                         Fill="{ThemeResource ControlStrongFillColorDefaultBrush}" 
+                         Opacity="0.3" />
+            </StackPanel>
+
+            <!-- Next / Finish -->
+            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
+                <Button Content="Back" Padding="24,10" CornerRadius="8"
+                        Command="{x:Bind ViewModel.PreviousStepCommand}" />
+                <Button Content="Next" 
+                        Style="{StaticResource AccentButtonStyle}"
+                        Padding="24,10" CornerRadius="8"
+                        Command="{x:Bind ViewModel.NextStepCommand}" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Page>

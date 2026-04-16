@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Page
+    x:Class="DesktopAssistant.Views.RegisterPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="using:DesktopAssistant.Converters">
+
+    <Page.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibility" />
+    </Page.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Left Panel - Branding -->
+        <Grid Grid.Column="0" Background="{ThemeResource SystemAccentColorDark1}">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="16" Padding="60">
+                <FontIcon Glyph="&#xE8FA;" FontSize="72" Foreground="White" HorizontalAlignment="Center" />
+                <TextBlock Text="Join Desktop Assistant" 
+                           FontSize="32" FontWeight="Bold" 
+                           Foreground="White" HorizontalAlignment="Center" />
+                <TextBlock Text="Create your account and start&#x0a;controlling your desktop remotely."
+                           FontSize="16" Foreground="#CCFFFFFF" 
+                           HorizontalAlignment="Center" TextAlignment="Center"
+                           LineHeight="24" />
+            </StackPanel>
+        </Grid>
+
+        <!-- Right Panel - Register Form -->
+        <Grid Grid.Column="1" Width="440" Padding="48">
+            <StackPanel VerticalAlignment="Center" Spacing="8" MaxWidth="340">
+                
+                <TextBlock Text="Create account" FontSize="28" FontWeight="SemiBold" Margin="0,0,0,4" />
+                <TextBlock Text="Fill in your details to get started"
+                           FontSize="14" Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                           Margin="0,0,0,24" />
+
+                <!-- Error Message -->
+                <InfoBar IsOpen="{x:Bind ViewModel.HasError, Mode=OneWay}"
+                         Severity="Error"
+                         Title="Registration Failed"
+                         Message="{x:Bind ViewModel.ErrorMessage, Mode=OneWay}"
+                         IsClosable="True"
+                         Margin="0,0,0,12" />
+
+                <!-- Name -->
+                <TextBlock Text="Full Name" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,4" />
+                <TextBox Text="{x:Bind ViewModel.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         PlaceholderText="John Doe"
+                         Padding="12,10" CornerRadius="8" />
+
+                <!-- Email -->
+                <TextBlock Text="Email" FontSize="13" FontWeight="SemiBold" Margin="0,12,0,4" />
+                <TextBox Text="{x:Bind ViewModel.Email, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         PlaceholderText="you@example.com"
+                         Padding="12,10" CornerRadius="8" />
+
+                <!-- Password -->
+                <TextBlock Text="Password" FontSize="13" FontWeight="SemiBold" Margin="0,12,0,4" />
+                <PasswordBox Password="{x:Bind ViewModel.Password, Mode=TwoWay}"
+                             PlaceholderText="Min 8 characters"
+                             Padding="12,10" CornerRadius="8" />
+
+                <!-- Confirm Password -->
+                <TextBlock Text="Confirm Password" FontSize="13" FontWeight="SemiBold" Margin="0,12,0,4" />
+                <PasswordBox Password="{x:Bind ViewModel.ConfirmPassword, Mode=TwoWay}"
+                             PlaceholderText="Repeat password"
+                             Padding="12,10" CornerRadius="8" />
+
+                <!-- Register Button -->
+                <Button Content="Create Account"
+                        Style="{StaticResource AccentButtonStyle}"
+                        HorizontalAlignment="Stretch"
+                        Padding="0,12" CornerRadius="8"
+                        Margin="0,20,0,0"
+                        Command="{x:Bind ViewModel.RegisterCommand}" />
+
+                <!-- Loading -->
+                <ProgressBar IsIndeterminate="True"
+                             Visibility="{x:Bind ViewModel.IsLoading, Mode=OneWay, Converter={StaticResource BoolToVisibility}}"
+                             Margin="0,8,0,0" />
+
+                <!-- Separator -->
+                <Grid Margin="0,20,0,20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Border Grid.Column="0" Height="1" Background="{ThemeResource DividerStrokeColorDefaultBrush}" VerticalAlignment="Center" />
+                    <TextBlock Grid.Column="1" Text="or" FontSize="13" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Margin="12,0" />
+                    <Border Grid.Column="2" Height="1" Background="{ThemeResource DividerStrokeColorDefaultBrush}" VerticalAlignment="Center" />
+                </Grid>
+
+                <!-- Back to Login -->
+                <Button Content="Already have an account? Sign in"
+                        HorizontalAlignment="Stretch"
+                        Padding="0,12" CornerRadius="8"
+                        Command="{x:Bind ViewModel.GoToLoginCommand}" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Page>

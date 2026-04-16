@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "DesktopAssistant (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "DesktopAssistant (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
