@@ -20,7 +20,10 @@ public static class QrCodeGenerator
             port = pairInfo.Port,
             token = pairInfo.PairToken,
             device = pairInfo.DeviceName,
-            expires = pairInfo.ExpiresAt.ToString("o")
+            expires = pairInfo.ExpiresAt.ToString("o"),
+            apiBaseUrl = pairInfo.ApiBaseUrl,
+            wsBaseUrl = pairInfo.WsBaseUrl,
+            syncVersion = pairInfo.SyncVersion,
         });
 
         using var qrGenerator = new QRCodeGenerator();

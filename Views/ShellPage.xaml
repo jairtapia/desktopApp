@@ -20,6 +20,11 @@
                         <FontIcon Glyph="&#xE836;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
+                <NavigationViewItem Content="Sync Preview" Tag="SyncPreviewPage">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE968;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
                 <NavigationViewItem Content="Dev Monitor" Tag="DevPage" Icon="Caption" />
             </NavigationView.MenuItems>
 

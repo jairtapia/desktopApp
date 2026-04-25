@@ -22,7 +22,9 @@ public class AppInfo
     /// </summary>
     public string Id => Convert.ToBase64String(
         System.Security.Cryptography.SHA256.HashData(
-            System.Text.Encoding.UTF8.GetBytes(ExecutablePath.ToLowerInvariant())
+            System.Text.Encoding.UTF8.GetBytes(
+                (string.IsNullOrWhiteSpace(ExecutablePath) ? Name : ExecutablePath).ToLowerInvariant()
+            )
         )
     )[..12];
 }

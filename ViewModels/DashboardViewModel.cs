@@ -14,6 +14,7 @@ public partial class DashboardViewModel : ObservableObject
     private readonly IWebSocketService _webSocketService;
     private readonly IAuthService _authService;
     private readonly ISyncService _syncService;
+    private readonly SyncDataBuilderService _syncBuilder;
     private readonly NavigationService _navigationService;
 
     [ObservableProperty]
@@ -37,6 +38,9 @@ public partial class DashboardViewModel : ObservableObject
     [ObservableProperty]
     public partial bool IsScanning { get; set; }
 
+    [ObservableProperty]
+    public partial bool IsSyncing { get; set; }
+
     public ObservableCollection<AppInfo> RunningApps { get; } = new();
     public ObservableCollection<string> RecentActions { get; } = new();
 
@@ -45,12 +49,14 @@ public partial class DashboardViewModel : ObservableObject
         IWebSocketService webSocketService,
         IAuthService authService,
         ISyncService syncService,
+        SyncDataBuilderService syncBuilder,
         NavigationService navigationService)
     {
         _appScanner = appScanner;
         _webSocketService = webSocketService;
         _authService = authService;
         _syncService = syncService;
+        _syncBuilder = syncBuilder;
         _navigationService = navigationService;
 
         UserName = _authService.CurrentUser?.Name ?? "User";
@@ -71,9 +77,7 @@ public partial class DashboardViewModel : ObservableObject
         var running = await _appScanner.GetRunningAppsAsync();
         RunningApps.Clear();
         foreach (var app in running)
-        {
             RunningApps.Add(app);
-        }
         RunningAppsCount = running.Count;
 
         var installed = await _appScanner.ScanInstalledAppsAsync();
@@ -106,33 +110,17 @@ public partial class DashboardViewModel : ObservableObject
     [RelayCommand]
     private async Task SyncNowAsync()
     {
-        var data = GenerateSyncData();
-        await _syncService.SendSyncDataAsync(data);
-    }
-
-    private List<SyncCategory> GenerateSyncData()
-    {
-        // This is a partial implementation of the long structure provided by the user
-        return new List<SyncCategory>
+        if (IsSyncing) return;
+        IsSyncing = true;
+        try
         {
-            new SyncCategory 
-            { 
-                Id = "system", Name = "SYSTEM MONITOR", Color = "#64748B", Icon = "Desktop",
-                Shortcuts = new List<SyncShortcut>
-                {
-                    new SyncShortcut { Id = "SYS_CPU", Label = "PROCESADOR", Icon = "Cpu", Size = "big", Subtitle = "Intel Core i9 · 13th Gen", ProgressValue = 42 },
-                    new SyncShortcut { Id = "SYS_RAM", Label = "MEMORIA RAM", Icon = "Memory", Size = "tall", Detail = "DDR5 · 32 GB total" }
-                }
-            },
-            new SyncCategory
-            {
-                Id = "spotify", Name = "SPOTIFY", Color = "#1DB954", Icon = "MusicNotes",
-                Shortcuts = new List<SyncShortcut>
-                {
-                    new SyncShortcut { Id = "SP_NOW", Label = "NOW PLAYING", Icon = "MusicNotes", Size = "big", Subtitle = "Tame Impala — The Less I Know", ProgressValue = 62 }
-                }
-            }
-        };
+            var data = await _syncBuilder.BuildAsync();
+            await _syncService.SendSyncDataAsync(data);
+        }
+        finally
+        {
+            IsSyncing = false;
+        }
     }
 
     [RelayCommand]

@@ -13,5 +13,6 @@ public interface IAppScannerService
     Task<List<AppInfo>> ScanInstalledAppsAsync();
     Task<List<AppInfo>> GetRunningAppsAsync();
     Task<List<AppInfo>> GetAllAppsAsync();
+    AppInfo? GetForegroundApp();
     event EventHandler<List<AppInfo>>? ScanCompleted;
 }

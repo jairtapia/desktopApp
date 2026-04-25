@@ -11,6 +11,9 @@ public class DevicePairInfo
     public int Port { get; set; } = 8765;
     public string PairToken { get; set; } = string.Empty;
     public string DeviceName { get; set; } = string.Empty;
+    public string ApiBaseUrl { get; set; } = string.Empty;
+    public string WsBaseUrl { get; set; } = string.Empty;
+    public string SyncVersion { get; set; } = "1.0";
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime ExpiresAt { get; set; } = DateTime.UtcNow.AddMinutes(5);
 

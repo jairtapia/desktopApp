@@ -9,12 +9,14 @@ public sealed partial class ShellPage : Page
     private readonly NavigationService _navigationService;
     private readonly IWebSocketService _webSocketService;
     private readonly IActionExecutorService _actionExecutor;
+    private readonly SpotifyMonitorService _spotifyMonitor;
 
     public ShellPage()
     {
         _navigationService = App.GetService<NavigationService>();
         _webSocketService = App.GetService<IWebSocketService>();
         _actionExecutor = App.GetService<IActionExecutorService>();
+        _spotifyMonitor = new SpotifyMonitorService(_webSocketService);
 
         InitializeComponent();
 
@@ -34,6 +36,8 @@ public sealed partial class ShellPage : Page
             {
                 ConnectionIcon.Glyph = connected ? "\uF385" : "\uF384";
             });
+            if (connected) _spotifyMonitor.Start();
+            else _spotifyMonitor.Stop();
         };
 
         // Auto-connect WebSocket
@@ -83,6 +87,9 @@ public sealed partial class ShellPage : Page
                     break;
                 case "DevicePairingPage":
                     ContentFrame.Navigate(typeof(DevicePairingPage));
+                    break;
+                case "SyncPreviewPage":
+                    ContentFrame.Navigate(typeof(SyncPreviewPage));
                     break;
                 case "DevPage":
                     ContentFrame.Navigate(typeof(DevPage));

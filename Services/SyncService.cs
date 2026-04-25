@@ -1,14 +1,20 @@
-using System;
 using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using DesktopAssistant.Models;
-using System.Text.Json;
 
 namespace DesktopAssistant.Services;
 
 public class SyncService : ISyncService
 {
     private readonly IWebSocketService _webSocketService;
+
+    private static readonly JsonSerializerOptions SerializerOptions = new()
+    {
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+    };
 
     public SyncService(IWebSocketService webSocketService)
     {
@@ -19,13 +25,8 @@ public class SyncService : ISyncService
     {
         if (!_webSocketService.IsConnected) return;
 
-        var message = new
-        {
-            type = "sync_data",
-            payload = data
-        };
-
-        var json = JsonSerializer.Serialize(message);
+        var message = new { type = "sync_data", payload = data };
+        var json = JsonSerializer.Serialize(message, SerializerOptions);
         await _webSocketService.SendMessageAsync(json);
     }
 }

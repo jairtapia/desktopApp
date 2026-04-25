@@ -1,6 +1,8 @@
 using System.Diagnostics;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using DesktopAssistant.Models;
 using Microsoft.Win32;
@@ -14,20 +16,73 @@ public class AppScannerService : IAppScannerService
 {
     public event EventHandler<List<AppInfo>>? ScanCompleted;
 
+    private static string CleanExecutablePath(string rawPath)
+    {
+        if (string.IsNullOrWhiteSpace(rawPath))
+        {
+            return string.Empty;
+        }
+
+        var exePath = rawPath;
+        if (exePath.Contains(','))
+        {
+            exePath = exePath[..exePath.LastIndexOf(',')];
+        }
+
+        return exePath.Trim().Trim('"');
+    }
+
+    private static DateTime? ParseInstallDate(object? rawInstallDate)
+    {
+        if (rawInstallDate is not string value || string.IsNullOrWhiteSpace(value))
+        {
+            return null;
+        }
+
+        return DateTime.TryParseExact(
+            value,
+            "yyyyMMdd",
+            CultureInfo.InvariantCulture,
+            DateTimeStyles.None,
+            out var installDate)
+            ? installDate
+            : null;
+    }
+
+    private static string GetProcessDisplayName(Process process)
+    {
+        try
+        {
+            var description = process.MainModule?.FileVersionInfo?.FileDescription;
+            if (!string.IsNullOrWhiteSpace(description))
+            {
+                return description.Trim();
+            }
+        }
+        catch
+        {
+            // Ignore inaccessible metadata and fall back to process name.
+        }
+
+        return process.ProcessName;
+    }
+
     public async Task<List<AppInfo>> ScanInstalledAppsAsync()
     {
         return await Task.Run(() =>
         {
             var apps = new List<AppInfo>();
-            var registryPaths = new[]
+
+            var roots = new (RegistryKey hive, string path)[]
             {
-                @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall",
-                @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall"
+                (Registry.LocalMachine, @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"),
+                (Registry.LocalMachine, @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall"),
+                (Registry.CurrentUser,  @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"),
             };
 
-            foreach (var path in registryPaths)
+            foreach (var (hive, path) in roots)
             {
-                using var key = Registry.LocalMachine.OpenSubKey(path);
+                using var key = hive.OpenSubKey(path);
                 if (key == null) continue;
 
                 foreach (var subKeyName in key.GetSubKeyNames())
@@ -51,21 +106,15 @@ public class AppScannerService : IAppScannerService
                             ?? subKey.GetValue("InstallLocation") as string
                             ?? "";
 
-                        // Clean up exe path (remove icon index like ",0")
-                        if (exePath.Contains(','))
-                            exePath = exePath[..exePath.LastIndexOf(',')];
-
-                        // Remove quotes
-                        exePath = exePath.Trim('"');
-
                         var app = new AppInfo
                         {
                             Name = displayName,
-                            ExecutablePath = exePath,
+                            ExecutablePath = CleanExecutablePath(exePath),
                             Publisher = subKey.GetValue("Publisher") as string,
                             Version = subKey.GetValue("DisplayVersion") as string,
                             IconPath = subKey.GetValue("DisplayIcon") as string,
-                            IsRunning = false
+                            IsRunning = false,
+                            InstallDate = ParseInstallDate(subKey.GetValue("InstallDate")),
                         };
 
                         // Avoid duplicates
@@ -112,7 +161,7 @@ public class AppScannerService : IAppScannerService
 
                     var app = new AppInfo
                     {
-                        Name = process.ProcessName,
+                        Name = GetProcessDisplayName(process),
                         ExecutablePath = exePath,
                         IsRunning = true,
                         ProcessId = process.Id,
@@ -132,6 +181,41 @@ public class AppScannerService : IAppScannerService
 
             return apps.OrderBy(a => a.Name).ToList();
         });
+    }
+
+    [DllImport("user32.dll")]
+    private static extern IntPtr GetForegroundWindow();
+
+    [DllImport("user32.dll", SetLastError = true)]
+    private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+
+    public AppInfo? GetForegroundApp()
+    {
+        try
+        {
+            var hwnd = GetForegroundWindow();
+            if (hwnd == IntPtr.Zero) return null;
+
+            GetWindowThreadProcessId(hwnd, out uint pid);
+            if (pid == 0) return null;
+
+            var process = Process.GetProcessById((int)pid);
+            if (string.IsNullOrWhiteSpace(process.MainWindowTitle)) return null;
+
+            string exePath;
+            try { exePath = process.MainModule?.FileName ?? process.ProcessName; }
+            catch { exePath = process.ProcessName; }
+
+            return new AppInfo
+            {
+                Name = GetProcessDisplayName(process),
+                ExecutablePath = exePath,
+                IsRunning = true,
+                ProcessId = process.Id,
+                WindowTitle = process.MainWindowTitle
+            };
+        }
+        catch { return null; }
     }
 
     public async Task<List<AppInfo>> GetAllAppsAsync()

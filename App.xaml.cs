@@ -41,12 +41,15 @@ public partial class App : Application
         services.AddSingleton<IActionExecutorService, ActionExecutorService>();
         services.AddSingleton<IDevicePairingService, DevicePairingService>();
         services.AddSingleton<ISyncService, SyncService>();
+        services.AddSingleton<SyncDataBuilderService>();
+        services.AddSingleton<ActiveAppMonitorService>();
 
         // ViewModels (transient - new instance per page)
         services.AddTransient<LoginViewModel>();
         services.AddTransient<RegisterViewModel>();
         services.AddTransient<TutorialViewModel>();
         services.AddTransient<DashboardViewModel>();
+        services.AddTransient<SyncPreviewViewModel>();
         services.AddTransient<DevicePairingViewModel>();
         services.AddTransient<SettingsViewModel>();
         services.AddTransient<DevViewModel>();
@@ -56,6 +59,9 @@ public partial class App : Application
 
     protected override void OnLaunched(LaunchActivatedEventArgs args)
     {
+        // Eagerly resolve so it subscribes to WebSocket events from the start
+        _ = GetService<ActiveAppMonitorService>();
+
         _window = new MainWindow();
         _window.Activate();
     }

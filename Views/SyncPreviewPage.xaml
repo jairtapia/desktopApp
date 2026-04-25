@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="DesktopAssistant.Views.SyncPreviewPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:models="using:DesktopAssistant.Models"
+    xmlns:conv="using:DesktopAssistant.Converters">
+
+    <Page.Resources>
+        <conv:HexColorToBrushConverter   x:Key="HexToBrush"    />
+        <conv:FieldTypeToBrushConverter  x:Key="TypeToBrush"   />
+        <conv:NullToVisibilityConverter  x:Key="NullToVis"     />
+        <conv:BoolToVisibilityConverter  x:Key="BoolToVis"     />
+        <conv:InverseBoolConverter       x:Key="InverseBool"   />
+        <conv:ObjectToStringConverter    x:Key="ObjToStr"      />
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*"    />
+        </Grid.RowDefinitions>
+
+        <!-- ── Toolbar ──────────────────────────────────────────────────── -->
+        <Grid Grid.Row="0" Padding="16,10"
+              Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+              BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
+              BorderThickness="0,0,0,1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*"    />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                <TextBlock Text="SYNC PREVIEW" FontWeight="Bold" FontSize="13" VerticalAlignment="Center" />
+                <ProgressRing IsActive="{x:Bind ViewModel.IsLoading, Mode=OneWay}" Width="16" Height="16" />
+            </StackPanel>
+
+            <TextBlock Grid.Column="1"
+                       Text="{x:Bind ViewModel.StatusText, Mode=OneWay}"
+                       FontFamily="Consolas" FontSize="12"
+                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                       VerticalAlignment="Center" HorizontalAlignment="Center" />
+
+            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+
+                <!-- WS connection pill -->
+                <Border CornerRadius="4" Padding="10,4"
+                        Background="{ThemeResource SubtleFillColorSecondaryBrush}">
+                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                        <!-- Connected dot -->
+                        <Ellipse Width="7" Height="7" Fill="#22C55E"
+                                 Visibility="{x:Bind ViewModel.IsConnected, Mode=OneWay, Converter={StaticResource BoolToVis}}" />
+                        <!-- Disconnected dot -->
+                        <Ellipse Width="7" Height="7" Fill="#6B7280"
+                                 Visibility="{x:Bind ViewModel.IsConnected, Mode=OneWay, Converter={StaticResource BoolToVis}, ConverterParameter=Invert}" />
+                        <TextBlock Text="WS" FontSize="11" FontFamily="Consolas"
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                    </StackPanel>
+                </Border>
+
+                <CheckBox Content="Enviar al celular"
+                          IsChecked="{x:Bind ViewModel.SendToMobile, Mode=TwoWay}"
+                          FontSize="12" VerticalAlignment="Center" />
+
+                <Button Content="Escanear"
+                        Command="{x:Bind ViewModel.LoadCommand}"
+                        IsEnabled="{x:Bind ViewModel.IsNotLoading, Mode=OneWay}"
+                        Style="{StaticResource AccentButtonStyle}"
+                        CornerRadius="6" FontSize="12" />
+
+                <Button Content="Sincronizar"
+                        Command="{x:Bind ViewModel.SyncCommand}"
+                        IsEnabled="{x:Bind ViewModel.IsNotLoading, Mode=OneWay}"
+                        CornerRadius="6" FontSize="12" />
+            </StackPanel>
+        </Grid>
+
+        <!-- ── Column headers ───────────────────────────────────────────── -->
+        <Grid Grid.Row="1"
+              BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
+              BorderThickness="0,0,0,1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="210" />
+                <ColumnDefinition Width="1"   />
+                <ColumnDefinition Width="290" />
+                <ColumnDefinition Width="1"   />
+                <ColumnDefinition Width="*"   />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="CATEGORIAS"
+                       FontSize="10" FontWeight="SemiBold" FontFamily="Consolas"
+                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" Padding="16,6" />
+            <Rectangle Grid.Column="1" Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
+            <TextBlock Grid.Column="2" Text="SHORTCUTS"
+                       FontSize="10" FontWeight="SemiBold" FontFamily="Consolas"
+                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" Padding="16,6" />
+            <Rectangle Grid.Column="3" Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
+            <TextBlock Grid.Column="4" Text="DETALLE"
+                       FontSize="10" FontWeight="SemiBold" FontFamily="Consolas"
+                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" Padding="16,6" />
+        </Grid>
+
+        <!-- ── Three-panel content ──────────────────────────────────────── -->
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="210" />
+                <ColumnDefinition Width="1"   />
+                <ColumnDefinition Width="290" />
+                <ColumnDefinition Width="1"   />
+                <ColumnDefinition Width="*"   />
+            </Grid.ColumnDefinitions>
+
+            <Rectangle Grid.Column="1" Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
+            <Rectangle Grid.Column="3" Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
+
+            <!-- Panel 1 — Categories -->
+            <ListView Grid.Column="0"
+                      ItemsSource="{x:Bind ViewModel.Categories, Mode=OneWay}"
+                      SelectedItem="{x:Bind ViewModel.SelectedCategory, Mode=TwoWay}"
+                      SelectionMode="Single" Padding="0,4">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="Padding" Value="0" />
+                        <Setter Property="MinHeight" Value="0" />
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="models:SyncCategory">
+                        <Grid Padding="12,9" ColumnSpacing="10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="4"   />
+                                <ColumnDefinition Width="*"   />
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Rectangle Grid.Column="0" RadiusX="2" RadiusY="2"
+                                       Fill="{Binding Color, Converter={StaticResource HexToBrush}}" />
+                            <TextBlock Grid.Column="1" Text="{x:Bind Name}"
+                                       FontSize="12" VerticalAlignment="Center"
+                                       TextTrimming="CharacterEllipsis" />
+                            <TextBlock Grid.Column="2" FontSize="10" FontFamily="Consolas"
+                                       Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                                       VerticalAlignment="Center" Text="{x:Bind Shortcuts.Count}" />
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <!-- Panel 2 — Shortcuts -->
+            <ListView Grid.Column="2"
+                      ItemsSource="{x:Bind ViewModel.ShortcutsForSelected, Mode=OneWay}"
+                      SelectedItem="{x:Bind ViewModel.SelectedShortcut, Mode=TwoWay}"
+                      SelectionMode="Single" Padding="0,4">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="Padding" Value="0" />
+                        <Setter Property="MinHeight" Value="0" />
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="models:SyncShortcut">
+                        <Grid Padding="12,8" ColumnSpacing="8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"    />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0" Spacing="2">
+                                <TextBlock Text="{x:Bind Label}" FontSize="12" FontWeight="SemiBold"
+                                           TextTrimming="CharacterEllipsis" />
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <TextBlock Text="{x:Bind Id}" FontSize="10" FontFamily="Consolas"
+                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                    <TextBlock Text="{x:Bind Icon}" FontSize="10" FontFamily="Consolas"
+                                               Foreground="{ThemeResource TextFillColorTertiaryBrush}" />
+                                </StackPanel>
+                            </StackPanel>
+                            <Border Grid.Column="1" CornerRadius="4" Padding="6,2"
+                                    Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                    VerticalAlignment="Center">
+                                <TextBlock Text="{x:Bind Size}" FontFamily="Consolas" FontSize="10"
+                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                            </Border>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <!-- Panel 3 — Detail -->
+            <ScrollViewer Grid.Column="4" VerticalScrollBarVisibility="Auto">
+                <StackPanel Padding="20,16" Spacing="20"
+                            Visibility="{x:Bind ViewModel.SelectedShortcut, Mode=OneWay, Converter={StaticResource NullToVis}}">
+
+                    <!-- Header info -->
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="{x:Bind ViewModel.SelectedShortcut.Label, Mode=OneWay}"
+                                   FontSize="16" FontWeight="Bold" />
+
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                            <TextBlock Text="{x:Bind ViewModel.SelectedShortcut.Id, Mode=OneWay}"
+                                       FontFamily="Consolas" FontSize="11"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                            <TextBlock Text="|" Foreground="{ThemeResource TextFillColorTertiaryBrush}" FontSize="11" />
+                            <TextBlock Text="{x:Bind ViewModel.SelectedShortcut.Icon, Mode=OneWay}"
+                                       FontFamily="Consolas" FontSize="11"
+                                       Foreground="{ThemeResource TextFillColorTertiaryBrush}" />
+                        </StackPanel>
+
+                        <!-- size + actionType badges -->
+                        <StackPanel Orientation="Horizontal" Spacing="6" Margin="0,2,0,0">
+                            <Border CornerRadius="4" Padding="8,3"
+                                    Background="{ThemeResource SubtleFillColorSecondaryBrush}">
+                                <TextBlock Text="{x:Bind ViewModel.SelectedShortcut.Size, Mode=OneWay}"
+                                           FontFamily="Consolas" FontSize="11" />
+                            </Border>
+                            <Border CornerRadius="4" Padding="8,3"
+                                    Background="{ThemeResource AccentFillColorDefaultBrush}"
+                                    Visibility="{x:Bind ViewModel.SelectedShortcut.ActionType, Mode=OneWay, Converter={StaticResource NullToVis}}">
+                                <TextBlock Text="{x:Bind ViewModel.SelectedShortcut.ActionType, Mode=OneWay}"
+                                           FontFamily="Consolas" FontSize="11" Foreground="White" />
+                            </Border>
+                        </StackPanel>
+
+                        <!-- Subtitle -->
+                        <TextBlock Text="{x:Bind ViewModel.SelectedShortcut.Subtitle, Mode=OneWay}"
+                                   FontSize="12" FontStyle="Italic"
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                   Visibility="{x:Bind ViewModel.SelectedShortcut.Subtitle, Mode=OneWay, Converter={StaticResource NullToVis}}" />
+
+                        <!-- Detail -->
+                        <TextBlock Text="{x:Bind ViewModel.SelectedShortcut.Detail, Mode=OneWay}"
+                                   FontSize="12"
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                   Visibility="{x:Bind ViewModel.SelectedShortcut.Detail, Mode=OneWay, Converter={StaticResource NullToVis}}" />
+                    </StackPanel>
+
+                    <!-- Stats -->
+                    <StackPanel Spacing="8"
+                                Visibility="{x:Bind ViewModel.SelectedShortcut.Stats, Mode=OneWay, Converter={StaticResource NullToVis}}">
+                        <TextBlock Text="STATS" FontSize="10" FontWeight="SemiBold" FontFamily="Consolas"
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <Rectangle Height="1" Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
+                        <ItemsRepeater ItemsSource="{x:Bind ViewModel.SelectedShortcut.Stats, Mode=OneWay}">
+                            <ItemsRepeater.ItemTemplate>
+                                <DataTemplate x:DataType="models:SyncStat">
+                                    <Grid Padding="0,4">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="120" />
+                                            <ColumnDefinition Width="*"   />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="{x:Bind Label}"
+                                                   FontFamily="Consolas" FontSize="11"
+                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                        <TextBlock Grid.Column="1" Text="{x:Bind Value}"
+                                                   FontSize="12" FontWeight="SemiBold" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsRepeater.ItemTemplate>
+                        </ItemsRepeater>
+                    </StackPanel>
+
+                    <!-- Logs -->
+                    <StackPanel Spacing="8"
+                                Visibility="{x:Bind ViewModel.SelectedShortcut.Logs, Mode=OneWay, Converter={StaticResource NullToVis}}">
+                        <TextBlock Text="LOGS" FontSize="10" FontWeight="SemiBold" FontFamily="Consolas"
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <Rectangle Height="1" Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
+                        <ItemsRepeater ItemsSource="{x:Bind ViewModel.SelectedShortcut.Logs, Mode=OneWay}">
+                            <ItemsRepeater.ItemTemplate>
+                                <DataTemplate x:DataType="x:String">
+                                    <TextBlock Text="{x:Bind}" FontFamily="Consolas" FontSize="11"
+                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                               Padding="0,3" />
+                                </DataTemplate>
+                            </ItemsRepeater.ItemTemplate>
+                        </ItemsRepeater>
+                    </StackPanel>
+
+                    <!-- Settings groups -->
+                    <StackPanel Spacing="16"
+                                Visibility="{x:Bind ViewModel.SelectedShortcut.SettingsGroups, Mode=OneWay, Converter={StaticResource NullToVis}}">
+                        <TextBlock Text="AJUSTES" FontSize="10" FontWeight="SemiBold" FontFamily="Consolas"
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <ItemsRepeater ItemsSource="{x:Bind ViewModel.SelectedShortcut.SettingsGroups, Mode=OneWay}">
+                            <ItemsRepeater.ItemTemplate>
+                                <DataTemplate x:DataType="models:SyncSettingsGroup">
+                                    <StackPanel Spacing="2" Margin="0,0,0,12">
+                                        <!-- Group title -->
+                                        <TextBlock Text="{x:Bind Title}"
+                                                   FontSize="11" FontWeight="SemiBold"
+                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                   Margin="0,0,0,6" />
+                                        <Rectangle Height="1" Fill="{ThemeResource DividerStrokeColorDefaultBrush}"
+                                                   Margin="0,0,0,6" />
+
+                                        <!-- Fields -->
+                                        <ItemsRepeater ItemsSource="{x:Bind Fields}">
+                                            <ItemsRepeater.ItemTemplate>
+                                                <DataTemplate x:DataType="models:SyncField">
+                                                    <Grid Padding="0,5" ColumnSpacing="10">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="56"  />
+                                                            <ColumnDefinition Width="170" />
+                                                            <ColumnDefinition Width="*"   />
+                                                        </Grid.ColumnDefinitions>
+
+                                                        <!-- Type badge -->
+                                                        <Border Grid.Column="0" CornerRadius="4" Padding="6,2"
+                                                                Background="{x:Bind Type, Converter={StaticResource TypeToBrush}}"
+                                                                HorizontalAlignment="Left" VerticalAlignment="Center">
+                                                            <TextBlock Text="{x:Bind Type}"
+                                                                       FontFamily="Consolas" FontSize="10"
+                                                                       Foreground="White" />
+                                                        </Border>
+
+                                                        <!-- Label -->
+                                                        <TextBlock Grid.Column="1" Text="{x:Bind Label}"
+                                                                   FontSize="12" VerticalAlignment="Center"
+                                                                   TextTrimming="CharacterEllipsis" />
+
+                                                        <!-- Value -->
+                                                        <TextBlock Grid.Column="2"
+                                                                   FontFamily="Consolas" FontSize="12"
+                                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                                   VerticalAlignment="Center"
+                                                                   TextTrimming="CharacterEllipsis"
+                                                                   Text="{x:Bind Value, Converter={StaticResource ObjToStr}}" />
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ItemsRepeater.ItemTemplate>
+                                        </ItemsRepeater>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsRepeater.ItemTemplate>
+                        </ItemsRepeater>
+                    </StackPanel>
+
+                </StackPanel>
+            </ScrollViewer>
+
+        </Grid>
+    </Grid>
+</Page>

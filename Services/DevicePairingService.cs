@@ -10,14 +10,60 @@ public class DevicePairingService : IDevicePairingService
 {
     private DevicePairInfo? _currentPairInfo;
 
+    private static string NormalizeUrlForPairing(
+        string configuredUrl,
+        string localIp,
+        string fallbackScheme,
+        int fallbackPort,
+        string fallbackPath)
+    {
+        if (Uri.TryCreate(configuredUrl, UriKind.Absolute, out var uri))
+        {
+            var builder = new UriBuilder(uri);
+            if (builder.Host.Equals("localhost", StringComparison.OrdinalIgnoreCase)
+                || builder.Host.Equals("127.0.0.1", StringComparison.OrdinalIgnoreCase)
+                || builder.Host.Equals("::1", StringComparison.OrdinalIgnoreCase))
+            {
+                builder.Host = localIp;
+            }
+
+            return builder.Uri.ToString().TrimEnd('/');
+        }
+
+        return $"{fallbackScheme}://{localIp}:{fallbackPort}{fallbackPath}";
+    }
+
     public DevicePairInfo GeneratePairInfo()
     {
+        var localIp = NetworkHelper.GetLocalIpAddress();
+        var apiBaseUrl = NormalizeUrlForPairing(
+            SecureStorage.GetApiBaseUrl(),
+            localIp,
+            "http",
+            8000,
+            "/api/v1");
+        var wsBaseUrl = NormalizeUrlForPairing(
+            SecureStorage.GetWsBaseUrl(),
+            localIp,
+            "ws",
+            8000,
+            "/ws");
+        var wsPort = 8765;
+
+        if (Uri.TryCreate(wsBaseUrl, UriKind.Absolute, out var wsUri) && wsUri.Port > 0)
+        {
+            wsPort = wsUri.Port;
+        }
+
         _currentPairInfo = new DevicePairInfo
         {
-            LocalIp = NetworkHelper.GetLocalIpAddress(),
-            Port = 8765,
+            LocalIp = localIp,
+            Port = wsPort,
             PairToken = TokenHelper.GeneratePairToken(),
             DeviceName = NetworkHelper.GetHostName(),
+            ApiBaseUrl = apiBaseUrl,
+            WsBaseUrl = wsBaseUrl,
+            SyncVersion = "1.0",
             CreatedAt = DateTime.UtcNow,
             ExpiresAt = DateTime.UtcNow.AddMinutes(5)
         };

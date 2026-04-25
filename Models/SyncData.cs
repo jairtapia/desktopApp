@@ -3,6 +3,21 @@ using System.Text.Json.Serialization;
 
 namespace DesktopAssistant.Models;
 
+public class RemoteCommandPayload
+{
+    [JsonPropertyName("action")]
+    public string Action { get; set; } = string.Empty;
+
+    [JsonPropertyName("target")]
+    public string? Target { get; set; }
+
+    [JsonPropertyName("params")]
+    public Dictionary<string, object>? Params { get; set; }
+
+    [JsonPropertyName("shortcutId")]
+    public string? ShortcutId { get; set; }
+}
+
 public class SyncCategory
 {
     [JsonPropertyName("id")]
@@ -73,6 +88,12 @@ public class SyncShortcut
 
     [JsonPropertyName("settingsGroups")]
     public List<SyncSettingsGroup>? SettingsGroups { get; set; }
+
+    [JsonPropertyName("command")]
+    public RemoteCommandPayload? Command { get; set; }
+
+    [JsonPropertyName("imageUrl")]
+    public string? ImageUrl { get; set; }
 }
 
 public class SyncStat

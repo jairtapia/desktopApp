@@ -46,6 +46,38 @@ public static class ActionTypes
     public const string MinimizeWindow = "minimize_window";
     public const string ListApps = "list_apps";
     public const string ListRunning = "list_running";
+    public const string SetVolume = "set_volume";
+    public const string MediaPlay    = "media_play";
+    public const string MediaPause   = "media_pause";
+    public const string MediaNext    = "media_next";
+    public const string MediaPrev    = "media_prev";
+    public const string MediaStop    = "media_stop";
+    public const string MediaShuffle = "media_shuffle";
+    public const string SetFanSpeed = "set_fan_speed";
+    public const string OpenUrl = "open_url";
+    public const string SendNotification = "send_notification";
+    public const string RunScript = "run_script";
+    public const string KillProcess = "kill_process";
+    public const string SetClipboard = "set_clipboard";
+    public const string TypeText = "type_text";
+    public const string PressKey = "press_key";
+    public const string MouseClick = "mouse_click";
+    public const string ScrollPage = "scroll_page";
+    public const string ZoomBrowser = "zoom_browser";
+    public const string ToggleDarkMode = "toggle_dark_mode";
+    public const string SleepDisplay = "sleep_display";
+    public const string WakeDisplay = "wake_display";
+    public const string Shutdown           = "shutdown";
+    public const string Restart            = "restart";
+    public const string TaskView           = "task_view";
+    public const string CloseWindow        = "close_window";
+    public const string VirtualDesktopNext = "virtual_desktop_next";
+    public const string VirtualDesktopPrev = "virtual_desktop_prev";
+    public const string Copy               = "copy";
+    public const string Paste              = "paste";
+    public const string Undo               = "undo";
+    public const string NewTab             = "new_tab";
+    public const string Save               = "save";
 }
 
 /// <summary>
